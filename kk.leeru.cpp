@@ -250,9 +250,9 @@ int minimax(OthelloBoard st, int depth, bool maximizingPlayer, int alpha, int be
             g_cpy.put_disc(c);
             value = max(value, minimax(g_cpy, depth-1, false, alpha, beta));
             alpha = max(alpha, value);
-            if (alpha >= beta){
-                break;
-            }
+//            if (alpha >= beta){
+//                break;
+//            }
         }
         //return alpha;
         return value;
@@ -264,9 +264,9 @@ int minimax(OthelloBoard st, int depth, bool maximizingPlayer, int alpha, int be
             g_cpy.put_disc(c);
             value = min(value, minimax(g_cpy, depth-1, true, alpha, beta));
             beta = min(beta, value);
-            if (beta <= alpha){
-                break;
-            }
+//            if (beta <= alpha){
+//                break;
+//            }
         }
         //return beta;
         return value;
