@@ -48,7 +48,7 @@ public:
     int cur_player;
     bool done;
     int winner;
-    bool last;
+    int last;
 public:
     int get_next_player(int player) const {
         return 3 - player;
@@ -146,7 +146,7 @@ public:
         if(!is_spot_valid(p)) {
             winner = get_next_player(cur_player);
             done = true;
-            last = false;
+            //last = false;
             //return false;
         }
         set_disc(p, cur_player);
@@ -163,7 +163,7 @@ public:
             if (next_valid_spots.size() == 0) {
                 // Game ends
                 done = true;
-                last = true;
+                last = cur_player;
                 int white_discs = disc_count[WHITE];
                 int black_discs = disc_count[BLACK];
                 if (white_discs == black_discs) winner = EMPTY;
@@ -281,14 +281,14 @@ int state(OthelloBoard st)
     std::vector<int>oppcr_stable = {0,0,0,0};
     std::vector<Point> danger = {Point(1,0),Point(1,1),Point(0,1), Point(0,6),Point(1,6),Point(1,7), Point(6,0),Point(6,1),Point(7,1), Point(7,6),Point(6,6),Point(6,7)};
     int h[8][8] =
-    {{20,-3,11,8,8,11,-3,20},
-     {-3,-7,-4,-1,-1,-4,-7,-3},
-     {11,-4,2,2, 2,2,-4,11},
-     {8,-1,2,-3,-3,2,-1,8},
-     {8,-1,2,-3,-3,2,-1,8},
-     {11,-4,2,2,2,2,-4,11},
-     {-3,-7,-4,-1,-1,-4,-7,-3},
-     {20,-3, 11,8,8,11,-3,20}};
+    {{22,-1,13,10,10,13,-1,22},
+     {-1,-5,-2,1,1,-2,-5,-1},
+     {13,-2,4,4, 4,4,-2,13},
+     {10,1,4,-1,-1,4,1,10},
+     {10,1,4,-1,-1,4,1,10},
+     {13,-2,4,4,4,4,-2,13},
+     {-1,-5,-2,1,1,-2,-5,-1},
+     {22,-1,13,10,10,13,-1,22}};
     double score = 0;
     st.disc_count[st.BLACK] = st.disc_count[st.WHITE] = 0;
     st.disc_count[st.EMPTY] = 64;
@@ -334,6 +334,23 @@ int state(OthelloBoard st)
                 int d_col = danger[i*3+j].y;
                 if (st.board[d_row][d_col] == oppo.cur_player){
                     st.disc_count[oppo.cur_player]++;
+                }
+            }
+        }
+        //empty
+        else {
+            pcr_stable[i]=0;
+            oppcr_stable[i]=0;
+            for (int j=0; j<3; j++){
+                int d_row = danger[i*3+j].x;
+                int d_col = danger[i*3+j].y;
+                if (st.board[d_row][d_col] == st.cur_player){
+                    //st.disc_count[st.cur_player] -= 7;
+                    score -= 7;
+                }
+                else if (st.board[d_row][d_col] == oppo.cur_player){
+                    //st.disc_count[oppo.cur_player] -= 7;
+                    score += 7;
                 }
             }
         }
@@ -436,6 +453,14 @@ int state(OthelloBoard st)
     if (op_bottom){
         adj_enforced -= opbottom_n;
     }
+    //check last move
+    int last_move_pt;
+    if (st.last == st.cur_player){
+        last_move_pt = 2;
+    }
+    else if (st.last == oppo.cur_player){
+        last_move_pt = -2;
+    }
     //
     int pcr_num = pcr_stable[0]+pcr_stable[1]+pcr_stable[2]+pcr_stable[3];
     int oppcr_num = oppcr_stable[0]+oppcr_stable[1]+oppcr_stable[2]+oppcr_stable[3];
@@ -450,7 +475,7 @@ int state(OthelloBoard st)
     if (st.disc_count[st.cur_player] + st.disc_count[oppo.cur_player] != 0){
         disc_diff = (100*(st.disc_count[st.cur_player] - st.disc_count[oppo.cur_player]))/(st.disc_count[st.cur_player] + st.disc_count[oppo.cur_player]);
     }
-    res = 20*corner_diff + 3*moves + 2*disc_diff + 2*adj_enforced;
+    res = 20*corner_diff + 3*moves + 2*disc_diff + 2*adj_enforced + last_move_pt;
     score += res;
     return score;
 }
