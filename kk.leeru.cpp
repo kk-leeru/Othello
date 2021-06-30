@@ -281,14 +281,14 @@ int state(OthelloBoard st)
     std::vector<int>oppcr_stable = {0,0,0,0};
     std::vector<Point> danger = {Point(1,0),Point(1,1),Point(0,1), Point(0,6),Point(1,6),Point(1,7), Point(6,0),Point(6,1),Point(7,1), Point(7,6),Point(6,6),Point(6,7)};
     int h[8][8] =
-    {{22,-1,13,10,10,13,-1,22},
+    {{27,-1,13,10,10,13,-1,27},
      {-1,-5,-2,1,1,-2,-5,-1},
      {13,-2,4,4, 4,4,-2,13},
      {10,1,4,-1,-1,4,1,10},
      {10,1,4,-1,-1,4,1,10},
      {13,-2,4,4,4,4,-2,13},
      {-1,-5,-2,1,1,-2,-5,-1},
-     {22,-1,13,10,10,13,-1,22}};
+     {27,-1,13,10,10,13,-1,27}};
     double score = 0;
     st.disc_count[st.BLACK] = st.disc_count[st.WHITE] = 0;
     st.disc_count[st.EMPTY] = 64;
@@ -323,7 +323,8 @@ int state(OthelloBoard st)
                 int d_row = danger[i*3+j].x;
                 int d_col = danger[i*3+j].y;
                 if (st.board[d_row][d_col] == st.cur_player){
-                    st.disc_count[st.cur_player]++;  //equates as having more discs, later translated into scores
+                    //st.disc_count[st.cur_player]+= 3;  //equates as having more discs, later translated into scores
+                    score += 5;
                 }
             }
         }
@@ -333,7 +334,8 @@ int state(OthelloBoard st)
                 int d_row = danger[i*3+j].x;
                 int d_col = danger[i*3+j].y;
                 if (st.board[d_row][d_col] == oppo.cur_player){
-                    st.disc_count[oppo.cur_player]++;
+                    //st.disc_count[oppo.cur_player]+= 3;
+                    score -= 5;
                 }
             }
         }
@@ -475,7 +477,7 @@ int state(OthelloBoard st)
     if (st.disc_count[st.cur_player] + st.disc_count[oppo.cur_player] != 0){
         disc_diff = (100*(st.disc_count[st.cur_player] - st.disc_count[oppo.cur_player]))/(st.disc_count[st.cur_player] + st.disc_count[oppo.cur_player]);
     }
-    res = 20*corner_diff + 3*moves + 2*disc_diff + 2*adj_enforced + last_move_pt;
+    res = 22*corner_diff + 3*moves + 2*disc_diff + 2*adj_enforced + last_move_pt;
     score += res;
     return score;
 }
